@@ -7,8 +7,7 @@ Hierarchical presentation is required when developing a corporate address book. 
 
 
 ## Introduction to TreeTableViewWithSwift
->~~ Development Environment: Swift 2.0, Xcode Version: 7.0.1, ios 9.0~~
-Upgrade to Swift 3.0, Xcode version 8.2.1
+>~~ Development Environment: Swift 5.0, Xcode Version: 10.2.1, ios 9.0
 
 It can also be viewed through a short book: [简书](http://www.jianshu.com/p/75bcd49f144e)
 ### 1, running effect
