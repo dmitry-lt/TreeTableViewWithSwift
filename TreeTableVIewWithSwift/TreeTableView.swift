@@ -23,7 +23,7 @@ class TreeTableView: UITableView, UITableViewDataSource,UITableViewDelegate{
     let NODE_CELL_ID: String = "nodecell"
     
     init(frame: CGRect, withData data: [TreeNode]) {
-        super.init(frame: frame, style: UITableViewStyle.plain)
+        super.init(frame: frame, style: UITableView.Style.plain)
         self.delegate = self
         self.dataSource = self
         mAllNodes = data
@@ -44,7 +44,7 @@ class TreeTableView: UITableView, UITableViewDataSource,UITableViewDelegate{
         
         //代码修改nodeIMG---UIImageView的显示模式.
         if node.type == TreeNode.NODE_TYPE_G {
-            cell.nodeIMG.contentMode = UIViewContentMode.center
+            cell.nodeIMG.contentMode = UIView.ContentMode.center
             cell.nodeIMG.image = UIImage(named: node.icon!)
         } else {
             cell.nodeIMG.image = nil
@@ -89,12 +89,12 @@ class TreeTableView: UITableView, UITableViewDataSource,UITableViewDelegate{
             
             // 插入和删除节点的动画
             if parentNode.isExpand {
-                self.insertRows(at: indexPathArray, with: UITableViewRowAnimation.none)
+                self.insertRows(at: indexPathArray, with: UITableView.RowAnimation.none)
             } else {
-                self.deleteRows(at: indexPathArray, with: UITableViewRowAnimation.none)
+                self.deleteRows(at: indexPathArray, with: UITableView.RowAnimation.none)
             }
             //更新被选组节点
-            self.reloadRows(at: [indexPath], with: UITableViewRowAnimation.none)
+            self.reloadRows(at: [indexPath], with: UITableView.RowAnimation.none)
             
         }
         
