@@ -1,30 +1,30 @@
 # TreeTableViewWithSwift
-TreeTableViewWithSwift是用Swift编写的树形结构显示的TableView控件。
+TreeTableViewWithSwift is a TableView control that is displayed in a tree structure written in Swift.
 
 
-## TreeTableViewWithSwift的由来
-在开发企业通讯录的时候需要层级展示。之前开发Android的时候有做过类似的功能，也是通过一些开源的内容进行改造利用。此次，在做ios的同类产品时，调研发现树形结构的控件并不是很多，虽然也有但大多看起来都比较负责，而且都是用OC编写的。介于我的项目是Swift开发的，并且TreeTableView貌似没有人用Swift编写过（也可能是我没找到）。所以打算自己动手写一个，从而丰衣足食。
+## The origin of TreeTableViewWithSwift
+Hierarchical presentation is required when developing a corporate address book. I have done similar functions before developing Android, and also used some open source content to transform and utilize. This time, when doing ios's similar products, the research found that there are not many controls of the tree structure, although most of them seem to be more responsible, and they are all written in OC. Between my project is developed by Swift, and the TreeTableView seems to have no one written in Swift (maybe I did not find it). So I plan to write one by myself, so that I can get enough food.
 
 
-## TreeTableViewWithSwift简介
->~~开发环境：Swift 2.0，Xcode版本：7.0.1 ，ios 9.0~~
-升级到 Swift 3.0， Xcode 版本 8.2.1  
+## Introduction to TreeTableViewWithSwift
+>~~ Development Environment: Swift 2.0, Xcode Version: 7.0.1, ios 9.0~~
+Upgrade to Swift 3.0, Xcode version 8.2.1
 
-也可以通过简书查看：[简书](http://www.jianshu.com/p/75bcd49f144e)
-### 1、运行效果
+It can also be viewed through a short book: [简书](http://www.jianshu.com/p/75bcd49f144e)
+### 1, running effect
 
 ![image](https://github.com/robertzhang/TreeTableViewWithSwift/raw/master/screenshots/treetableview-01.png)
 
-### 2、关键代码的解读
-TreeTableViewWithSwift其实是对tableview的扩展。在此之前需要先创建一个TreeNode类用于存储我们的数据
+### 2, Interpretation of key code
+TreeTableViewWithSwift is actually an extension to tableview. Before you need to create a TreeNode class to store our data.
 
 ``` Swift
 public class TreeNode {
     
-    static let NODE_TYPE_G: Int = 0 //表示该节点不是叶子节点
-    static let NODE_TYPE_N: Int = 1 //表示节点为叶子节点
+    static let NODE_TYPE_G: Int = 0 // indicates that the node is not a leaf node
+    static let NODE_TYPE_N: Int = 1 // indicates that the node is a leaf node
     var type: Int?
-    var desc: String? // 对于多种类型的内容，需要确定其内容
+    var desc: String? // For multiple types of content, you need to determine its content
     var id: String?
     var pId: String?
     var name: String?
@@ -41,12 +41,12 @@ public class TreeNode {
         self.name = name
     }
     
-    //是否为根节点
+    // Is it the root node?
     func isRoot() -> Bool{
         return parent == nil
     }
     
-    //判断父节点是否打开
+    // Determine if the parent node is open
     func isParentExpand() -> Bool {
         if parent == nil {
             return false
@@ -54,17 +54,17 @@ public class TreeNode {
         return (parent?.isExpand)!
     }
     
-    //是否是叶子节点
+    // Is it a leaf node?
     func isLeaf() -> Bool {
         return children.count == 0
     }
     
-    //获取level,用于设置节点内容偏左的距离
+    // Get level, used to set the distance of the left side of the node content
     func getLevel() -> Int {
         return parent == nil ? 0 : (parent?.getLevel())!+1
     }
     
-    //设置展开
+    // Set the expansion
     func setExpand(isExpand: Bool) {
         self.isExpand = isExpand
         if !isExpand {
@@ -77,29 +77,29 @@ public class TreeNode {
 }
 ```
 
-这里需要讲解一下，id和pId分别对于当前Node的ID标示和其父节点ID标示。节点直接建立关系它们是很关键的属性。children是一个TreeNode的数组，用来存放当前节点的直接子节点。通过children和parent两个属性，就可以很快的找到当前节点的关系节点。
-为了能够操作我们的TreeNode数据，我还创建了一个TreeNodeHelper类。
+It needs to be explained here that id and pId are respectively labeled for the current Node ID and its parent node ID. Nodes directly establish relationships are key attributes. Children is an array of TreeNodes that hold the immediate children of the current node. Through the children and parent properties, you can quickly find the relationship node of the current node.
+In order to be able to manipulate our TreeNode data, I also created a TreeNodeHelper class.
 
  ``` Swift
  class TreeNodeHelper {
     
-    // 单例模式
+    // singleton mode
     class var sharedInstance: TreeNodeHelper {
         struct Static {
             static var instance: TreeNodeHelper?
             static var token: dispatch_once_t = 0
         }
-        dispatch_once(&Static.token) { // 该函数意味着代码仅会被运行一次，而且此运行是线程同步
+        dispatch_once(&Static.token) { // This function means that the code will only be run once, and this run is thread synchronization
             Static.instance = TreeNodeHelper()
         }
         return Static.instance!
     }
 
- ```    
-TreeNodeHelper是一个单例模式的工具类。通过TreeNodeHelper.sharedInstance就能获取类实例
+ ```
+TreeNodeHelper is a tool class for singleton mode. Get the class instance through TreeNodeHelper.sharedInstance
 
  ``` Swift
-    //传入普通节点，转换成排序后的Node
+    // Incoming ordinary nodes, converted to sorted Node
     func getSortedNodes(groups: NSMutableArray, defaultExpandLevel: Int) -> [TreeNode] {
         var result: [TreeNode] = []
         var nodes = convetData2Node(groups)
@@ -113,15 +113,15 @@ TreeNodeHelper是一个单例模式的工具类。通过TreeNodeHelper.sharedIns
     
     
  ```
-getSortedNodes是TreeNode的入口方法。调用该方法的时候需要传入一个Array类型的数据集。这个数据集可以是任何你想用来构建树形结构的内容。在这里我虽然只传入了一个groups参数，但其实可以根据需要重构这个方法，传入多个类似groups的参数。例如，当我们需要做企业通讯录的时候，企业通讯录的数据中存在部门集合和用户集合。部门之间有层级关系，用户又属于某个部门。我们可以将部门和用户都转换成TreeNode元数据。这样修改方法可以修改为：
+getSortedNodes is the entry method of the TreeNode. When calling this method, you need to pass in a dataset of type Array. This data set can be anything you want to use to build a tree structure. Although I only passed in a group parameter here, I can actually refactor this method as needed, passing in multiple parameters like groups. For example, when we need to do a corporate directory, there are departmental collections and user collections in the corporate directory data. There is a hierarchical relationship between departments, and users belong to a certain department. We can convert both departments and users into TreeNode metadata. This modification method can be modified to:
 
  ```
  func getSortedNodes(groups: NSMutableArray, users: NSMutableArray, defaultExpandLevel: Int) -> [TreeNode]
  ```
-是不是感觉很有意思呢？
+Does it feel very interesting?
 
  ``` Swift
-    //过滤出所有可见节点
+    // Filter out all visible nodes
     func filterVisibleNode(nodes: [TreeNode]) -> [TreeNode] {
         var result: [TreeNode] = []
         for item in nodes {
@@ -133,7 +133,7 @@ getSortedNodes是TreeNode的入口方法。调用该方法的时候需要传入�
         return result
     }
     
-    //将数据转换成书节点
+    // Convert the data into a book node
     func convetData2Node(groups: NSMutableArray) -> [TreeNode] {
         var nodes: [TreeNode] = []
         
@@ -155,7 +155,7 @@ getSortedNodes是TreeNode的入口方法。调用该方法的时候需要传入�
         }
         
         /**
-        * 设置Node间，父子关系;让每两个节点都比较一次，即可设置其中的关系
+        * Set Node, parent-child relationship; let each two nodes compare once, you can set the relationship
         */
         var n: TreeNode
         var m: TreeNode
@@ -181,10 +181,10 @@ getSortedNodes是TreeNode的入口方法。调用该方法的时候需要传入�
     }
  ```
  
- convetData2Node方法将数据转换成TreeNode，同时也构建了TreeNode之间的关系。
+ The convetData2Node method converts the data into a TreeNode and also builds the relationship between the TreeNodes.
  
  ``` Swift
-    // 获取根节点集
+    // Get the root node set
     func getRootNodes(nodes: [TreeNode]) -> [TreeNode] {
         var root: [TreeNode] = []
         for item in nodes {
@@ -195,7 +195,7 @@ getSortedNodes是TreeNode的入口方法。调用该方法的时候需要传入�
         return root
     }
     
-    //把一个节点的所有子节点都挂上去
+    // hang all the child nodes of a node
     func addNode(inout nodes: [TreeNode], node: TreeNode, defaultExpandLeval: Int, currentLevel: Int) {
         nodes.append(node)
         if defaultExpandLeval >= currentLevel {
@@ -209,15 +209,15 @@ getSortedNodes是TreeNode的入口方法。调用该方法的时候需要传入�
         }
     }
     
-    // 设置节点图标
+    // Set the node icon
     func setNodeIcon(node: TreeNode) {
         if node.children.count > 0 {
             node.type = TreeNode.NODE_TYPE_G
             if node.isExpand {
-                // 设置icon为向下的箭头
+                // et the icon to the down arrow
                 node.icon = "tree_ex.png"
             } else if !node.isExpand {
-                // 设置icon为向右的箭头
+                // Set the icon to the right arrow
                 node.icon = "tree_ec.png"
             }
         } else {
@@ -226,13 +226,13 @@ getSortedNodes是TreeNode的入口方法。调用该方法的时候需要传入�
     }
 }
  ```
-剩下的代码难度不大，很容易理解。需要多说一句的TreeNode.NODE\_TYPE\_G和TreeNode.NODE\_TYPE\_N是用来告诉TreeNode当前的节点的类型。正如上面提到的企业通讯录，这个两个type就可以用来区分node数据。
+The rest of the code is not very difficult and easy to understand. Need to say more about TreeNode.NODE\_TYPE\_G and TreeNode.NODE\_TYPE\_N are used to tell the TreeNode the current type of node. As mentioned in the corporate directory, these two types can be used to distinguish node data.
 
-TreeTableView我的重头戏来了。它继承了UITableView， UITableViewDataSource，UITableViewDelegate。
+TreeTableView is my main event. It inherits UITableView, UITableViewDataSource, UITableViewDelegate.
 
  ``` Swift
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        // 通过nib自定义tableviewcell
+        // Custom tableviewcell through nib
         let nib = UINib(nibName: "TreeNodeTableViewCell", bundle: nil)
         tableView.registerNib(nib, forCellReuseIdentifier: NODE_CELL_ID)
         
@@ -240,10 +240,10 @@ TreeTableView我的重头戏来了。它继承了UITableView， UITableViewDataS
         
         var node: TreeNode = mNodes![indexPath.row]
         
-        //cell缩进
+        // cell indent
         cell.background.bounds.origin.x = -20.0 * CGFloat(node.getLevel())
         
-        //代码修改nodeIMG---UIImageView的显示模式.
+        // Code to modify the display mode of nodeIMG---UIImageView.
         if node.type == TreeNode.NODE_TYPE_G {
             cell.nodeIMG.contentMode = UIViewContentMode.Center
             cell.nodeIMG.image = UIImage(named: node.icon!)
@@ -256,9 +256,9 @@ TreeTableView我的重头戏来了。它继承了UITableView， UITableViewDataS
         return cell
     }
  ```
-tableView:cellForRowAtIndexPath方法中,我们使用了UINib，因为我通过自定义TableViewCell,来填充tableview。这里也使用了cell的复用机制。
+In the tableView:cellForRowAtIndexPath method, we used UINib because I populated the tableview by customizing the TableViewCell. The reuse mechanism of the cell is also used here.
 
-下面我们来看控制树形结构展开的关键代码
+Let's look at the key code that controls the expansion of the tree structure.
 
  ```
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -267,13 +267,13 @@ tableView:cellForRowAtIndexPath方法中,我们使用了UINib，因为我通过�
         var startPosition = indexPath.row+1
         var endPosition = startPosition
         
-        if parentNode.isLeaf() {// 点击的节点为叶子节点
+        if parentNode.isLeaf() {// The node clicked is the leaf node
             // do something
         } else {
             expandOrCollapse(&endPosition, node: parentNode)
             mNodes = TreeNodeHelper.sharedInstance.filterVisibleNode(mAllNodes!) //更新可见节点
             
-            //修正indexpath
+            // Fix indexpath
             var indexPathArray :[NSIndexPath] = []
             var tempIndexPath: NSIndexPath?
             for (var i = startPosition; i < endPosition ; i++) {
@@ -281,59 +281,59 @@ tableView:cellForRowAtIndexPath方法中,我们使用了UINib，因为我通过�
                 indexPathArray.append(tempIndexPath!)
             }
             
-            // 插入和删除节点的动画
+            // Insert and delete animations of nodes
             if parentNode.isExpand {
                 self.insertRowsAtIndexPaths(indexPathArray, withRowAnimation: UITableViewRowAnimation.None)
             } else {
                 self.deleteRowsAtIndexPaths(indexPathArray, withRowAnimation: UITableViewRowAnimation.None)
             }
-            //更新被选组节点
+            // Update the selected group node
             self.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.None)
             
         }
         
     }
     
-    //展开或者关闭某个节点
+    // Expand or close a node
     func expandOrCollapse(inout count: Int, node: TreeNode) {
-        if node.isExpand { //如果当前节点是开着的，需要关闭节点下的所有子节点
+        if node.isExpand { // If the current node is open, you need to close all children under the node
             closedChildNode(&count,node: node)
-        } else { //如果节点是关着的，打开当前节点即可
+        } else { // If the node is closed, open the current node
             count += node.children.count
             node.setExpand(true)
         }
         
     }
     
-    //关闭某个节点和该节点的所有子节点
+    // Close a node and all children of the node
     func closedChildNode(inout count:Int, node: TreeNode) {
         if node.isLeaf() {
             return
         }
         if node.isExpand {
             node.isExpand = false
-            for item in node.children { //关闭子节点
-                count++ // 计算子节点数加一
+            for item in node.children { // close child node
+                count++ // calculate the number of child nodes plus one
                 closedChildNode(&count, node: item)
             }
         } 
     }
 
  ```
-我们点击某一个非叶子节点的时候，将该节点的子节点添加到我们的tableView中，并给它们加上动画。这就是我们需要的树形展开视图。首先我们要计算出该节点的子节点数（在关闭节点的时候，还需要计算对应的子节点的子节点的展开节点数），然后获取这些子节点的集合，通过tableview的insertRowsAtIndexPaths和deleteRowsAtIndexPaths方法进行插入节点和删除节点。
+When we click on a non-leaf node, we add the child nodes of the node to our tableView and animate them. This is the tree-expanded view we need. First, we need to calculate the number of children of the node (when the node is closed, we need to calculate the number of nodes of the child nodes of the corresponding child nodes), and then obtain the set of these child nodes, through the insertRowsAtIndexPaths and deleteRowsAtIndexPaths methods of the tableview. Insert nodes and delete nodes.
 
-tableview:didSelectRowAtIndexPath还算好理解，关键是expandOrCollapse和closedChildNode方法。
+Tableview:didSelectRowAtIndexPath is still well understood, the key is the expandOrCollapse and closedChildNode methods.
 
-expandOrCollapse的作用是打开或者关闭点击节点。当操作为打开一个节点的时候，只需要设置该节点为展开，并且计算其子节点数就可以。而关闭一个节点就相对麻烦。因为我们要计算子节点是否是打开的，如果子节点是打开的，那么子节点的子节点的数也要计算进去。可能这里听起来有点绕口，建议运行程序后看着实例进行理解。
+The role of expandOrCollapse is to open or close the click node. When the operation is to open a node, you only need to set the node to expand, and calculate the number of its children. Turning off a node is relatively cumbersome. Because we want to calculate whether the child node is open, if the child node is open, then the number of child nodes of the child node is also calculated. It may sound a bit confusing here, it is recommended to look at the examples to understand after running the program.
 
-### 3、鸣谢
-借鉴的资料有：
+### 3, Acknowledgement
+The materials borrowed are:
 
-* [swift 可展开可收缩的表视图](http://www.jianshu.com/p/706dcc4ccb2f)
+* [swift expandable shrinkable table view] (http://www.jianshu.com/p/706dcc4ccb2f)
 
-* [Android 打造任意层级树形控件 考验你的数据结构和设计](http://blog.csdn.net/lmj623565791/article/details/40212367)
+* [Android builds any level of tree control to test your data structure and design] (http://blog.csdn.net/lmj623565791/article/details/40212367)
 
-有兴趣的朋友也可以参考以上两篇blog。
+Interested friends can also refer to the above two blogs.
 
 ## License
 All source code is licensed under the MIT License.
