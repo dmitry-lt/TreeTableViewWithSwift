@@ -11,10 +11,10 @@ import Foundation
 
 open class TreeNode {
     
-    static let NODE_TYPE_G: Int = 0 //表示该节点不是叶子节点
-    static let NODE_TYPE_N: Int = 1 //表示节点为叶子节点
+    static let NODE_TYPE_G: Int = 0 // indicates that the node is not a leaf node
+    static let NODE_TYPE_N: Int = 1 // indicates that the node is a leaf node
     var type: Int?
-    var desc: String? // 对于多种类型的内容，需要确定其内容
+    var desc: String? // For multiple types of content, you need to determine its content
     var id: String?
     var pId: String?
     var name: String?
@@ -31,12 +31,12 @@ open class TreeNode {
         self.name = name
     }
     
-    //是否为根节点
+    // Is it the root node?
     func isRoot() -> Bool{
         return parent == nil
     }
     
-    //判断父节点是否打开
+    // Determine if the parent node is open
     func isParentExpand() -> Bool {
         if parent == nil {
             return false
@@ -44,17 +44,17 @@ open class TreeNode {
         return (parent?.isExpand)!
     }
     
-    //是否是叶子节点
+    // Is it a leaf node?
     func isLeaf() -> Bool {
         return children.count == 0
     }
     
-    //获取level,用于设置节点内容偏左的距离
+    // Get level, used to set the distance of the left side of the node content
     func getLevel() -> Int {
         return parent == nil ? 0 : (parent?.getLevel())!+1
     }
     
-    //设置展开
+    // Set the expansion
     func setExpand(_ isExpand: Bool) {
         self.isExpand = isExpand
         if !isExpand {
@@ -62,6 +62,5 @@ open class TreeNode {
                 children[i].setExpand(isExpand)
             }
         }
-    }
-    
+    }    
 }

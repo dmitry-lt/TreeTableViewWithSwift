@@ -96,6 +96,7 @@ In order to be able to manipulate our TreeNode data, I also created a TreeNodeHe
     }
 
  ```
+
 TreeNodeHelper is a tool class for singleton mode. Get the class instance through TreeNodeHelper.sharedInstance
 
  ``` Swift
@@ -214,7 +215,7 @@ Does it feel very interesting?
         if node.children.count > 0 {
             node.type = TreeNode.NODE_TYPE_G
             if node.isExpand {
-                // et the icon to the down arrow
+                // Set the icon to the down arrow
                 node.icon = "tree_ex.png"
             } else if !node.isExpand {
                 // Set the icon to the right arrow
@@ -271,7 +272,7 @@ Let's look at the key code that controls the expansion of the tree structure.
             // do something
         } else {
             expandOrCollapse(&endPosition, node: parentNode)
-            mNodes = TreeNodeHelper.sharedInstance.filterVisibleNode(mAllNodes!) //更新可见节点
+            mNodes = TreeNodeHelper.sharedInstance.filterVisibleNode(mAllNodes!) // Update visible node
             
             // Fix indexpath
             var indexPathArray :[NSIndexPath] = []

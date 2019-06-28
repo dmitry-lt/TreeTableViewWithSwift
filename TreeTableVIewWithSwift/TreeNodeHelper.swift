@@ -11,7 +11,7 @@ import Foundation
 
 class TreeNodeHelper {
     
-    // 单例模式
+   // singleton mode
     class var sharedInstance: TreeNodeHelper {
         struct Static {
             static var instance: TreeNodeHelper? = TreeNodeHelper()
@@ -19,9 +19,8 @@ class TreeNodeHelper {
         }
         return Static.instance!
     }
-    
-    
-    //传入普通节点，转换成排序后的Node
+
+   // Incoming ordinary nodes, converted to sorted Node
     func getSortedNodes(_ groups: NSMutableArray, defaultExpandLevel: Int) -> [TreeNode] {
         var result: [TreeNode] = []
         let nodes = convetData2Node(groups)
@@ -32,8 +31,8 @@ class TreeNodeHelper {
         
         return result
     }
-    
-    //过滤出所有可见节点
+
+    // Filter out all visible nodes
     func filterVisibleNode(_ nodes: [TreeNode]) -> [TreeNode] {
         var result: [TreeNode] = []
         for item in nodes {
@@ -44,8 +43,8 @@ class TreeNodeHelper {
         }
         return result
     }
-    
-    //将数据转换成书节点
+
+   // Convert the data into a book node
     func convetData2Node(_ groups: NSMutableArray) -> [TreeNode] {
         var nodes: [TreeNode] = []
         
@@ -68,7 +67,7 @@ class TreeNodeHelper {
         }
         
         /**
-        * 设置Node间，父子关系;让每两个节点都比较一次，即可设置其中的关系
+        * Set Node, parent-child relationship; let each two nodes compare once, you can set the relationship
         */
         var n: TreeNode
         var m: TreeNode
@@ -93,7 +92,7 @@ class TreeNodeHelper {
         return nodes
     }
     
-    // 获取根节点集
+    // Get the root node set
     func getRootNodes(_ nodes: [TreeNode]) -> [TreeNode] {
         var root: [TreeNode] = []
         for item in nodes {
@@ -104,7 +103,7 @@ class TreeNodeHelper {
         return root
     }
     
-    //把一个节点的所有子节点都挂上去
+    // hang all the child nodes of a node
     func addNode(_ nodes: inout [TreeNode], node: TreeNode, defaultExpandLeval: Int, currentLevel: Int) {
         nodes.append(node)
         if defaultExpandLeval >= currentLevel {
@@ -118,15 +117,15 @@ class TreeNodeHelper {
         }
     }
     
-    // 设置节点图标
+    // Set the node icon
     func setNodeIcon(_ node: TreeNode) {
         if node.children.count > 0 {
             node.type = TreeNode.NODE_TYPE_G
             if node.isExpand {
-                // 设置icon为向下的箭头
+                // Set the icon to the down arrow
                 node.icon = "tree_ex.png"
             } else if !node.isExpand {
-                // 设置icon为向右的箭头
+                // Set the icon to the right arrow
                 node.icon = "tree_ec.png"
             }
         } else {

@@ -9,14 +9,14 @@
 import UIKit
 
 protocol TreeTableViewCellDelegate: NSObjectProtocol {
-    func cellClick() //参数还没加，TreeNode表示节点
+    func cellClick() // The parameter has not been added yet, and the TreeNode represents the node.
 }
 
 
 class TreeTableView: UITableView, UITableViewDataSource,UITableViewDelegate{
     
-    var mAllNodes: [TreeNode]? //所有的node
-    var mNodes: [TreeNode]? //可见的node
+    var mAllNodes: [TreeNode]? // All nodes
+    var mNodes: [TreeNode]? // Visible nodes
     
     //    var treeTableViewCellDelegate: TreeTableViewCellDelegate?
     
@@ -31,7 +31,7 @@ class TreeTableView: UITableView, UITableViewDataSource,UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // 通过nib自定义tableviewcell
+        // Custom tableviewcell through nib
         let nib = UINib(nibName: "TreeNodeTableViewCell", bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: NODE_CELL_ID)
         
@@ -39,10 +39,10 @@ class TreeTableView: UITableView, UITableViewDataSource,UITableViewDelegate{
         
         let node: TreeNode = mNodes![indexPath.row]
         
-        //cell缩进
+        // cell indent
         cell.background.bounds.origin.x = -20.0 * CGFloat(node.getLevel())
         
-        //代码修改nodeIMG---UIImageView的显示模式.
+         // Code to modify the display mode of nodeIMG---UIImageView.
         if node.type == TreeNode.NODE_TYPE_G {
             cell.nodeIMG.contentMode = UIView.ContentMode.center
             cell.nodeIMG.image = UIImage(named: node.icon!)
@@ -73,13 +73,13 @@ class TreeTableView: UITableView, UITableViewDataSource,UITableViewDelegate{
         let startPosition = indexPath.row+1
         var endPosition = startPosition
         
-        if parentNode.isLeaf() {// 点击的节点为叶子节点
+        if parentNode.isLeaf() {// The node clicked is the leaf node
             // do something
         } else {
             expandOrCollapse(&endPosition, node: parentNode)
-            mNodes = TreeNodeHelper.sharedInstance.filterVisibleNode(mAllNodes!) //更新可见节点
+            mNodes = TreeNodeHelper.sharedInstance.filterVisibleNode(mAllNodes!) // Update visible node
             
-            //修正indexpath
+            // Fix indexpath
             var indexPathArray :[IndexPath] = []
             var tempIndexPath: IndexPath?
             for i in startPosition ..< endPosition {
@@ -87,39 +87,39 @@ class TreeTableView: UITableView, UITableViewDataSource,UITableViewDelegate{
                 indexPathArray.append(tempIndexPath!)
             }
             
-            // 插入和删除节点的动画
+            // Insert and delete animations of nodes
             if parentNode.isExpand {
                 self.insertRows(at: indexPathArray, with: UITableView.RowAnimation.none)
             } else {
                 self.deleteRows(at: indexPathArray, with: UITableView.RowAnimation.none)
             }
-            //更新被选组节点
+            // Update the selected group node
             self.reloadRows(at: [indexPath], with: UITableView.RowAnimation.none)
             
         }
         
     }
     
-    //展开或者关闭某个节点
+    // Expand or close a node
     func expandOrCollapse(_ count: inout Int, node: TreeNode) {
-        if node.isExpand { //如果当前节点是开着的，需要关闭节点下的所有子节点
+        if node.isExpand { // If the current node is open, you need to close all children under the node
             closedChildNode(&count,node: node)
-        } else { //如果节点是关着的，打开当前节点即可
+        } else { // If the node is closed, open the current node
             count += node.children.count
             node.setExpand(true)
         }
         
     }
     
-    //关闭某个节点和该节点的所有子节点
+    // Close a node and all children of the node
     func closedChildNode(_ count:inout Int, node: TreeNode) {
         if node.isLeaf() {
             return
         }
         if node.isExpand {
             node.isExpand = false
-            for item in node.children { //关闭子节点
-                count += 1 // 计算子节点数加一
+            for item in node.children { // close child node
+                count += 1 // calculate the number of child nodes plus one
                 closedChildNode(&count, node: item)
             }
         } 
